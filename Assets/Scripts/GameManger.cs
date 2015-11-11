@@ -1,14 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public Camera camera2;
+
 
 public class GameManger : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
+    public Camera OverviewCamera;
+    // Use this for initialization
+    void Start () {
 		BeginGame();
-        camera2.enabled = false;
+        OverviewCamera.enabled = false;
 	
 	}
 	
@@ -19,7 +20,7 @@ public class GameManger : MonoBehaviour {
 		}
         if (Input.GetKeyDown (KeyCode.C))
         {
-            camera2.enabled = !camera2.enabled;
+            OverviewCamera.enabled = !OverviewCamera.enabled;
         }
 	
 	}
