@@ -24,7 +24,7 @@ public class GameManger : MonoBehaviour {
         {
             OverviewCamera.enabled = !OverviewCamera.enabled;
         }
-		if (Input.GetKeyDown ("escape")) {
+		if (Input.GetKeyDown (KeyCode.P)) {
 			paused = togglePause ();
 		}
 	
