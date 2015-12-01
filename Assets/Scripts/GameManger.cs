@@ -8,6 +8,7 @@ public class GameManger : MonoBehaviour {
 
     public Camera OverviewCamera;
 	private bool paused = false;
+    private bool gameover = false;
     // Use this for initialization
     void Start () {
         OverviewCamera.enabled = false;
@@ -55,7 +56,31 @@ public class GameManger : MonoBehaviour {
 			GUILayout.FlexibleSpace();
 			GUILayout.EndArea();
 		}
-	}
+        if (gameover)
+        {
+            GUILayout.BeginArea(new Rect(0, 0, Screen.width, Screen.height));
+            GUILayout.FlexibleSpace();
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+
+            GUILayout.BeginVertical("box");
+            GUILayout.Label("Game Over!");
+            if (GUILayout.Button("Restart"))
+            {
+                Application.LoadLevel(Application.loadedLevel);
+
+            }
+            if (GUILayout.Button("Exit"))
+            {
+                Application.Quit();
+            }
+            GUILayout.EndVertical();
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.EndArea();
+        }
+    }
 
 	private void RestartGame () 
 	{
@@ -75,4 +100,8 @@ public class GameManger : MonoBehaviour {
 			return(true);    
 		}
 	}
+    public void gameOverToggle()
+    {
+        gameover = !gameover;
+    }
 }
