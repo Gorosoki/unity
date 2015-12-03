@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UnityEngine.UI;
 
 
 
@@ -11,6 +12,8 @@ public class GameManager : MonoBehaviour {
     public Camera OverviewCamera;
 
     private OVRPlayerController player;
+    public Text timerLabel;
+    private float time;
 
     // Use this for initialization
     void Start () {
@@ -35,6 +38,9 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        time += Time.deltaTime;
+        timerLabel.text = "Timer: " + System.Math.Round(time, 2);
+
 		if (Input.GetKeyDown (KeyCode.R)) {
 			RestartGame();
 		}
