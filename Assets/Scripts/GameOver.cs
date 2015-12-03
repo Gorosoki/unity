@@ -3,29 +3,35 @@ using System.Collections;
 
 
 
-public class GameOver : MonoBehaviour {
-    private GameManager gameManager;
+public class GameOver : VRGUI
+{
 
-    void Start()
+    public GUISkin skin;
+
+    public override void OnVRGUI()
     {
-        GameObject gameControllerObject = GameObject.FindWithTag("GameManager");
-        if (gameControllerObject != null)
+        GUI.skin = skin;
+
+        GUILayout.BeginArea(new Rect(0, 0, Screen.width, Screen.height));
+
+        GUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+
+        GUILayout.BeginVertical();
+        GUILayout.Label("Game Over!");
+        if (GUILayout.Button("Restart"))
         {
-            gameManager = gameControllerObject.GetComponent<GameManager>();
+            Application.LoadLevel(Application.loadedLevel);
+
         }
-        if (gameManager == null)
+        if (GUILayout.Button("Exit"))
         {
-            Debug.Log("Cannot find 'GameManager' script");
+            Application.Quit();
         }
+        GUILayout.EndVertical();
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
+        GUILayout.EndArea();
     }
-    void OnTriggerEnter (Collider col)
-    {
-        print (col.tag);
-        if (col.tag == "Player")
-        {
-            //GameManger gameManger = GetComponent<GameManger>();
-            gameManager.gameOverToggle();
-            Debug.Log("Game Over!");
-        }
-    }
+    
 }

@@ -10,11 +10,17 @@ public class GameManager : MonoBehaviour {
 	private bool paused = false;
     private bool gameover = false;
     private OVRPlayerController player;
+    private Menu menu;
+    private GameOver gameOver;
     // Use this for initialization
     void Start () {
         OverviewCamera.enabled = false;
         gameover = false;
         Time.timeScale = 1f;
+
+        menu = GetComponent<Menu>();
+        gameOver = GetComponent<GameOver>();
+
         GameObject gameControllerObject = GameObject.FindWithTag("OVRPlayerController");
         if (gameControllerObject != null)
         {
@@ -37,7 +43,9 @@ public class GameManager : MonoBehaviour {
             OverviewCamera.enabled = !OverviewCamera.enabled;
         }
 		if (Input.GetKeyDown (KeyCode.P)) {
-			paused = togglePause ();
+            paused = !paused;
+            menu.enabled = !menu.enabled;
+            togglePause(); 
 		}
 
         if(player.transform.position.y < 0)
@@ -46,32 +54,36 @@ public class GameManager : MonoBehaviour {
         }
 	
 	}
-	void OnGUI()
-	{
-		if (paused) {
-			GUILayout.BeginArea(new Rect(0, 0, Screen.width, Screen.height));
-			GUILayout.FlexibleSpace();
-			GUILayout.BeginHorizontal();
-			GUILayout.FlexibleSpace();
-			
-			GUILayout.BeginVertical("box");
-			GUILayout.Label ("Game is paused!");
-			if (GUILayout.Button ("Continue")) {
-				paused = togglePause ();
-			}
-			if (GUILayout.Button ("Restart")) {
-				Application.LoadLevel(Application.loadedLevel);
-				
-			}
-			if (GUILayout.Button ("Exit")) {
-				Application.Quit ();
-			}
-			GUILayout.EndVertical();		
-			GUILayout.FlexibleSpace();
-			GUILayout.EndHorizontal();
-			GUILayout.FlexibleSpace();
-			GUILayout.EndArea();
-		}
+    void OnGUI()
+    {
+        if (paused)
+        {
+            GUILayout.BeginArea(new Rect(0, 0, Screen.width, Screen.height));
+            GUILayout.FlexibleSpace();
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+
+            GUILayout.BeginVertical("box");
+            GUILayout.Label("Game is paused!");
+            if (GUILayout.Button("Continue"))
+            {
+                togglePause();
+            }
+            if (GUILayout.Button("Restart"))
+            {
+                Application.LoadLevel(Application.loadedLevel);
+
+            }
+            if (GUILayout.Button("Exit"))
+            {
+                Application.Quit();
+            }
+            GUILayout.EndVertical();
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.EndArea();
+        }
         if (gameover)
         {
             GUILayout.BeginArea(new Rect(0, 0, Screen.width, Screen.height));
@@ -98,27 +110,32 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-	private void RestartGame () 
+
+    private void RestartGame () 
 	{
         Application.LoadLevel(Application.loadedLevel);
 	}
 
-	private bool togglePause()
+	private void togglePause()
 	{
 		if(Time.timeScale == 0f)
 		{
 			Time.timeScale = 1f;
-			return(false);
 		}
 		else
 		{
-			Time.timeScale = 0f;
-			return(true);    
+			Time.timeScale = 0f;    
 		}
 	}
     public void gameOverToggle()
     {
         Time.timeScale = 0f;
+        gameOver.enabled = gameOver.enabled;
         gameover = true;
+    }
+    public void MenuToggle()
+    {
+        togglePause();
+        menu.enabled = !menu.enabled;
     }
 }
