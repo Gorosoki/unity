@@ -8,7 +8,8 @@ public class GameOver : MonoBehaviour {
 	// Update is called once per frame
 	void OnCollisionEnter (Collision col)
     {
-        if (col.gameObject.tag == "CubePlayer")
+        print (col.gameObject.tag);
+        if (col.gameObject.tag == "OVRPlayerController")
         {
             gameManager.gameOverToggle();
         }

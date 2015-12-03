@@ -9,21 +9,17 @@ public class GameManager : MonoBehaviour {
     public GameObject pausePanel;
     public GameObject gameOverPanel;
     public Camera OverviewCamera;
-	private bool paused = false;
-    private bool gameover = false;
+
     private OVRPlayerController player;
-    //private Menu menu;
-    //private GameOver gameOver;
+
     // Use this for initialization
     void Start () {
+        Cursor.visible = false;
         gameOverPanel.SetActive(false);
         pausePanel.SetActive(false);
         OverviewCamera.enabled = false;
-        gameover = false;
-        Time.timeScale = 1f;
 
-       // menu = GetComponent<Menu>();
-       // gameOver = GetComponent<GameOver>();
+        Time.timeScale = 1f;
 
         GameObject gameControllerObject = GameObject.FindWithTag("OVRPlayerController");
         if (gameControllerObject != null)
@@ -48,74 +44,14 @@ public class GameManager : MonoBehaviour {
         }
 		if (Input.GetKeyDown (KeyCode.P)) {
             togglePause();
-            paused = !paused;
-            //menu.enabled = !menu.enabled;
-             
 		}
 
-        if(player.transform.position.y < 0)
-        {
-            gameOverToggle();
-        }
+        //if(player.transform.position.y < 0)
+        //{
+        //    gameOverToggle();
+        //}
 	
 	}
-    //void OnGUI()
-    //{
-    //    if (paused)
-    //    {
-    //        GUILayout.BeginArea(new Rect(0, 0, Screen.width, Screen.height));
-    //        GUILayout.FlexibleSpace();
-    //        GUILayout.BeginHorizontal();
-    //        GUILayout.FlexibleSpace();
-
-    //        GUILayout.BeginVertical();
-    //        GUILayout.Label("Game is paused!");
-    //        if (GUILayout.Button("Continue"))
-    //        {
-    //            togglePause();
-    //            paused = !paused;
-    //        }
-    //        if (GUILayout.Button("Restart"))
-    //        {
-    //            Application.LoadLevel(Application.loadedLevel);
-
-    //        }
-    //        if (GUILayout.Button("Exit"))
-    //        {
-    //            Application.Quit();
-    //        }
-    //        GUILayout.EndVertical();
-    //        GUILayout.FlexibleSpace();
-    //        GUILayout.EndHorizontal();
-    //        GUILayout.FlexibleSpace();
-    //        GUILayout.EndArea();
-    //    }
-    //    if (gameover)
-    //    {
-    //        GUILayout.BeginArea(new Rect(0, 0, Screen.width, Screen.height));
-    //        GUILayout.FlexibleSpace();
-    //        GUILayout.BeginHorizontal();
-    //        GUILayout.FlexibleSpace();
-
-    //        GUILayout.BeginVertical("box");
-    //        GUILayout.Label("Game Over!");
-    //        if (GUILayout.Button("Restart"))
-    //        {
-    //            Application.LoadLevel(Application.loadedLevel);
-
-    //        }
-    //        if (GUILayout.Button("Exit"))
-    //        {
-    //            Application.Quit();
-    //        }
-    //        GUILayout.EndVertical();
-    //        GUILayout.FlexibleSpace();
-    //        GUILayout.EndHorizontal();
-    //        GUILayout.FlexibleSpace();
-    //        GUILayout.EndArea();
-    //    }
-    //}
-
 
     public void RestartGame () 
 	{
@@ -129,28 +65,42 @@ public class GameManager : MonoBehaviour {
 		{
             pausePanel.SetActive(false);
 			Time.timeScale = 1f;
-		}
+            Cursor.visible = false;
+            cursorToggle();
+        }
 		else
 		{
             pausePanel.SetActive(true);
-			Time.timeScale = 0f;    
-		}
+			Time.timeScale = 0f;
+            Cursor.visible = true;
+            cursorToggle();
+        }
 	}
     public void gameOverToggle()
     {
+        Cursor.visible = true;
+        cursorToggle();
         Time.timeScale = 0f;
         gameOverPanel.SetActive(true);
-        //gameOver.enabled = gameOver.enabled;
-        gameover = true;
     }
     public void MenuToggle()
     {
         togglePause();
-        //menu.enabled = !menu.enabled;
     }
 
     public void quitGame()
     {
         Application.Quit();
+    }
+    public void cursorToggle()
+    {
+        if (Cursor.visible == true)
+        {
+            Cursor.lockState = CursorLockMode.None;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+        }
     }
 }
