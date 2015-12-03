@@ -28,191 +28,192 @@ using System.Collections.Generic;
 [RequireComponent(typeof(CharacterController))]
 public class OVRPlayerController : MonoBehaviour
 {
-	/// <summary>
-	/// The rate acceleration during movement.
-	/// </summary>
-	public float Acceleration = 0.1f;
+    /// <summary>
+    /// The rate acceleration during movement.
+    /// </summary>
+    public float Acceleration = 0.1f;
 
-	/// <summary>
-	/// The rate of damping on movement.
-	/// </summary>
-	public float Damping = 0.3f;
+    /// <summary>
+    /// The rate of damping on movement.
+    /// </summary>
+    public float Damping = 0.3f;
 
-	/// <summary>
-	/// The rate of additional damping when moving sideways or backwards.
-	/// </summary>
-	public float BackAndSideDampen = 0.5f;
+    /// <summary>
+    /// The rate of additional damping when moving sideways or backwards.
+    /// </summary>
+    public float BackAndSideDampen = 0.5f;
 
-	/// <summary>
-	/// The force applied to the character when jumping.
-	/// </summary>
-	public float JumpForce = 0.3f;
+    /// <summary>
+    /// The force applied to the character when jumping.
+    /// </summary>
+    public float JumpForce = 0.3f;
 
-	/// <summary>
-	/// The rate of rotation when using a gamepad.
-	/// </summary>
-	public float RotationAmount = 1.5f;
+    /// <summary>
+    /// The rate of rotation when using a gamepad.
+    /// </summary>
+    public float RotationAmount = 1.5f;
 
-	/// <summary>
-	/// The rate of rotation when using the keyboard.
-	/// </summary>
-	public float RotationRatchet = 45.0f;
+    /// <summary>
+    /// The rate of rotation when using the keyboard.
+    /// </summary>
+    public float RotationRatchet = 45.0f;
 
-	/// <summary>
-	/// If true, reset the initial yaw of the player controller when the Hmd pose is recentered.
-	/// </summary>
-	public bool HmdResetsY = true;
+    /// <summary>
+    /// If true, reset the initial yaw of the player controller when the Hmd pose is recentered.
+    /// </summary>
+    public bool HmdResetsY = true;
 
-	/// <summary>
-	/// If true, tracking data from a child OVRCameraRig will update the direction of movement.
-	/// </summary>
-	public bool HmdRotatesY = true;
+    /// <summary>
+    /// If true, tracking data from a child OVRCameraRig will update the direction of movement.
+    /// </summary>
+    public bool HmdRotatesY = true;
 
-	/// <summary>
-	/// Modifies the strength of gravity.
-	/// </summary>
-	public float GravityModifier = 0.379f;
-	
-	/// <summary>
-	/// If true, each OVRPlayerController will use the player's physical height.
-	/// </summary>
-	public bool useProfileData = true;
+    /// <summary>
+    /// Modifies the strength of gravity.
+    /// </summary>
+    public float GravityModifier = 0.379f;
 
-	protected CharacterController Controller = null;
-	protected OVRCameraRig CameraRig = null;
+    /// <summary>
+    /// If true, each OVRPlayerController will use the player's physical height.
+    /// </summary>
+    public bool useProfileData = true;
 
-	private float MoveScale = 1.0f;
-	private Vector3 MoveThrottle = Vector3.zero;
-	private float FallSpeed = 0.0f;
-	private OVRPose? InitialPose;
-	private float InitialYRotation = 0.0f;
-	private float MoveScaleMultiplier = 1.0f;
-	private float RotationScaleMultiplier = 1.0f;
-	private bool  SkipMouseRotation = false;
-	private bool  HaltUpdateMovement = false;
-	private bool prevHatLeft = false;
-	private bool prevHatRight = false;
-	private float SimulationRate = 60f;
+    protected CharacterController Controller = null;
+    protected OVRCameraRig CameraRig = null;
 
-	void Start()
-	{
-		// Add eye-depth as a camera offset from the player controller
-		var p = CameraRig.transform.localPosition;
-		p.z = OVRManager.profile.eyeDepth;
-		CameraRig.transform.localPosition = p;
-	}
+    private float MoveScale = 1.0f;
+    private Vector3 MoveThrottle = Vector3.zero;
+    private float FallSpeed = 0.0f;
+    private OVRPose? InitialPose;
+    private float InitialYRotation = 0.0f;
+    private float MoveScaleMultiplier = 1.0f;
+    private float RotationScaleMultiplier = 1.0f;
+    private bool SkipMouseRotation = false;
+    private bool HaltUpdateMovement = false;
+    private bool prevHatLeft = false;
+    private bool prevHatRight = false;
+    private float SimulationRate = 60f;
 
-	void Awake()
-	{
-		Controller = gameObject.GetComponent<CharacterController>();
+    void Start()
+    {
+        // Add eye-depth as a camera offset from the player controller
+        var p = CameraRig.transform.localPosition;
+        p.z = OVRManager.profile.eyeDepth;
+        CameraRig.transform.localPosition = p;
+    }
 
-		if(Controller == null)
-			Debug.LogWarning("OVRPlayerController: No CharacterController attached.");
+    void Awake()
+    {
+        Controller = gameObject.GetComponent<CharacterController>();
 
-		// We use OVRCameraRig to set rotations to cameras,
-		// and to be influenced by rotation
-		OVRCameraRig[] CameraRigs = gameObject.GetComponentsInChildren<OVRCameraRig>();
+        if (Controller == null)
+            Debug.LogWarning("OVRPlayerController: No CharacterController attached.");
 
-		if(CameraRigs.Length == 0)
-			Debug.LogWarning("OVRPlayerController: No OVRCameraRig attached.");
-		else if (CameraRigs.Length > 1)
-			Debug.LogWarning("OVRPlayerController: More then 1 OVRCameraRig attached.");
-		else
-			CameraRig = CameraRigs[0];
+        // We use OVRCameraRig to set rotations to cameras,
+        // and to be influenced by rotation
+        OVRCameraRig[] CameraRigs = gameObject.GetComponentsInChildren<OVRCameraRig>();
 
-		InitialYRotation = transform.rotation.eulerAngles.y;
-	}
+        if (CameraRigs.Length == 0)
+            Debug.LogWarning("OVRPlayerController: No OVRCameraRig attached.");
+        else if (CameraRigs.Length > 1)
+            Debug.LogWarning("OVRPlayerController: More then 1 OVRCameraRig attached.");
+        else
+            CameraRig = CameraRigs[0];
 
-	void OnEnable()
-	{
-		OVRManager.display.RecenteredPose += ResetOrientation;
+        InitialYRotation = transform.rotation.eulerAngles.y;
+    }
 
-		if (CameraRig != null)
-		{
-			CameraRig.UpdatedAnchors += UpdateTransform;
-		}
-	}
+    void OnEnable()
+    {
+        OVRManager.display.RecenteredPose += ResetOrientation;
 
-	void OnDisable()
-	{
-		OVRManager.display.RecenteredPose -= ResetOrientation;
+        if (CameraRig != null)
+        {
+            CameraRig.UpdatedAnchors += UpdateTransform;
+        }
+    }
 
-		if (CameraRig != null)
-		{
-			CameraRig.UpdatedAnchors -= UpdateTransform;
-		}
-	}
+    void OnDisable()
+    {
+        OVRManager.display.RecenteredPose -= ResetOrientation;
 
-	protected virtual void Update()
-	{
-		if (useProfileData)
-		{
-			if (InitialPose == null)
-			{
-				// Save the initial pose so it can be recovered if useProfileData
-				// is turned off later.
-				InitialPose = new OVRPose()
-				{
-					position = CameraRig.transform.localPosition,
-					orientation = CameraRig.transform.localRotation
-				};
-			}
+        if (CameraRig != null)
+        {
+            CameraRig.UpdatedAnchors -= UpdateTransform;
+        }
+    }
 
-			var p = CameraRig.transform.localPosition;
-			p.y = OVRManager.profile.eyeHeight - 0.5f * Controller.height
-				+ Controller.center.y;
-			CameraRig.transform.localPosition = p;
-		}
-		else if (InitialPose != null)
-		{
-			// Return to the initial pose if useProfileData was turned off at runtime
-			CameraRig.transform.localPosition = InitialPose.Value.position;
-			CameraRig.transform.localRotation = InitialPose.Value.orientation;
-			InitialPose = null;
-		}
+    protected virtual void Update()
+    {
+        if (useProfileData)
+        {
+            if (InitialPose == null)
+            {
+                // Save the initial pose so it can be recovered if useProfileData
+                // is turned off later.
+                InitialPose = new OVRPose()
+                {
+                    position = CameraRig.transform.localPosition,
+                    orientation = CameraRig.transform.localRotation
+                };
+            }
 
-		UpdateMovement();
+            var p = CameraRig.transform.localPosition;
+            p.y = OVRManager.profile.eyeHeight - 0.5f * Controller.height
+                + Controller.center.y;
+            CameraRig.transform.localPosition = p;
+        }
+        else if (InitialPose != null)
+        {
+            // Return to the initial pose if useProfileData was turned off at runtime
+            CameraRig.transform.localPosition = InitialPose.Value.position;
+            CameraRig.transform.localRotation = InitialPose.Value.orientation;
+            InitialPose = null;
+        }
 
-		Vector3 moveDirection = Vector3.zero;
+        UpdateMovement();
 
-		float motorDamp = (1.0f + (Damping * SimulationRate * Time.deltaTime));
+        Vector3 moveDirection = Vector3.zero;
 
-		MoveThrottle.x /= motorDamp;
-		MoveThrottle.y = (MoveThrottle.y > 0.0f) ? (MoveThrottle.y / motorDamp) : MoveThrottle.y;
-		MoveThrottle.z /= motorDamp;
+        float motorDamp = (1.0f + (Damping * SimulationRate * Time.deltaTime));
 
-		moveDirection += MoveThrottle * SimulationRate * Time.deltaTime;
+        MoveThrottle.x /= motorDamp;
+        MoveThrottle.y = (MoveThrottle.y > 0.0f) ? (MoveThrottle.y / motorDamp) : MoveThrottle.y;
+        MoveThrottle.z /= motorDamp;
 
-		// Gravity
-		if (Controller.isGrounded && FallSpeed <= 0)
-			FallSpeed = ((Physics.gravity.y * (GravityModifier * 0.002f)));
-		else
-			FallSpeed += ((Physics.gravity.y * (GravityModifier * 0.002f)) * SimulationRate * Time.deltaTime);
+        moveDirection += MoveThrottle * SimulationRate * Time.deltaTime;
 
-		moveDirection.y += FallSpeed * SimulationRate * Time.deltaTime;
+        // Gravity
+        if (Controller.isGrounded && FallSpeed <= 0)
+            FallSpeed = ((Physics.gravity.y * (GravityModifier * 0.002f)));
+        else
+            FallSpeed += ((Physics.gravity.y * (GravityModifier * 0.002f)) * SimulationRate * Time.deltaTime);
 
-		// Offset correction for uneven ground
-		float bumpUpOffset = 0.0f;
+        moveDirection.y += FallSpeed * SimulationRate * Time.deltaTime;
+
+        // Offset correction for uneven ground
+        float bumpUpOffset = 0.0f;
 
         if (Controller.isGrounded && MoveThrottle.y <= transform.lossyScale.y * 0.001f)
-		{
-			bumpUpOffset = Mathf.Max(Controller.stepOffset, new Vector3(moveDirection.x, 0, moveDirection.z).magnitude);
-			moveDirection -= bumpUpOffset * Vector3.up;
-		}
+        {
+            bumpUpOffset = Mathf.Max(Controller.stepOffset, new Vector3(moveDirection.x, 0, moveDirection.z).magnitude);
+            moveDirection -= bumpUpOffset * Vector3.up;
+        }
 
-		Vector3 predictedXZ = Vector3.Scale((Controller.transform.localPosition + moveDirection), new Vector3(1, 0, 1));
+        Vector3 predictedXZ = Vector3.Scale((Controller.transform.localPosition + moveDirection), new Vector3(1, 0, 1));
 
-		// Move contoller
-		Controller.Move(moveDirection);
+        // Move contoller
+        Controller.Move(moveDirection);
 
-		Vector3 actualXZ = Vector3.Scale(Controller.transform.localPosition, new Vector3(1, 0, 1));
+        Vector3 actualXZ = Vector3.Scale(Controller.transform.localPosition, new Vector3(1, 0, 1));
 
-		if (predictedXZ != actualXZ)
-			MoveThrottle += (actualXZ - predictedXZ) / (SimulationRate * Time.deltaTime);
-	}
+        if (predictedXZ != actualXZ)
+            MoveThrottle += (actualXZ - predictedXZ) / (SimulationRate * Time.deltaTime);
+    }
 
-	public virtual void UpdateMovement()
-	{
+    public virtual void UpdateMovement()
+    {     
+	
 		if (HaltUpdateMovement)
 			return;
 
@@ -299,7 +300,7 @@ public class OVRPlayerController : MonoBehaviour
 			euler.y += RotationRatchet;
 
 		prevHatRight = curHatRight;
-
+       
 		//Use keys to ratchet rotation
 		if (Input.GetKeyDown(KeyCode.Q))
 			euler.y -= RotationRatchet;
