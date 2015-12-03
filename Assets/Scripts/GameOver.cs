@@ -1,37 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-
-
-public class GameOver : VRGUI
-{
-
-    public GUISkin skin;
-
-    public override void OnVRGUI()
+public class GameOver : MonoBehaviour {
+    public GameManager gameManager;
+	// Use this for initialization
+	
+	// Update is called once per frame
+	void OnCollisionEnter (Collision col)
     {
-        GUI.skin = skin;
-
-        GUILayout.BeginArea(new Rect(0, 0, Screen.width, Screen.height));
-
-        GUILayout.BeginHorizontal();
-        GUILayout.FlexibleSpace();
-
-        GUILayout.BeginVertical();
-        GUILayout.Label("Game Over!");
-        if (GUILayout.Button("Restart"))
+        if (col.gameObject.tag == "CubePlayer")
         {
-            Application.LoadLevel(Application.loadedLevel);
-
+            gameManager.gameOverToggle();
         }
-        if (GUILayout.Button("Exit"))
-        {
-            Application.Quit();
-        }
-        GUILayout.EndVertical();
-        GUILayout.FlexibleSpace();
-        GUILayout.EndHorizontal();
-        GUILayout.EndArea();
     }
-    
 }
