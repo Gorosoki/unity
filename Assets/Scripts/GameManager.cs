@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour {
 
     public GameObject pausePanel;
     public GameObject gameOverPanel;
+    public RawImage redDot;
     public Camera OverviewCamera;
 
     private OVRPlayerController player;
@@ -21,6 +22,7 @@ public class GameManager : MonoBehaviour {
         gameOverPanel.SetActive(false);
         pausePanel.SetActive(false);
         OverviewCamera.enabled = false;
+        redDot.enabled = false;
 
         Time.timeScale = 1f;
 
@@ -51,12 +53,6 @@ public class GameManager : MonoBehaviour {
 		if (Input.GetKeyDown (KeyCode.P)) {
             togglePause();
 		}
-
-        //if(player.transform.position.y < 0)
-        //{
-        //    gameOverToggle();
-        //}
-	
 	}
 
     public void RestartGame () 
@@ -70,14 +66,16 @@ public class GameManager : MonoBehaviour {
         if (Time.timeScale == 0f)
 		{
             pausePanel.SetActive(false);
-			Time.timeScale = 1f;
+            redDot.enabled = false;
+            Time.timeScale = 1f;
             Cursor.visible = false;
             cursorToggle();
         }
 		else
 		{
             pausePanel.SetActive(true);
-			Time.timeScale = 0f;
+            redDot.enabled = true;
+            Time.timeScale = 0f;
             Cursor.visible = true;
             cursorToggle();
         }
@@ -88,6 +86,7 @@ public class GameManager : MonoBehaviour {
         cursorToggle();
         Time.timeScale = 0f;
         gameOverPanel.SetActive(true);
+        redDot.enabled = true;
     }
     public void MenuToggle()
     {
